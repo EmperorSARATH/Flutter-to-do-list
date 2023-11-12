@@ -14,28 +14,29 @@ class QuoteList extends StatefulWidget {
 
 class _QuoteListState extends State<QuoteList> {
   String text='';
-  List<Quote> quotes = [];
+  final List<Quote> quotes = [];
+
   var msgController = TextEditingController();
 
 
   bool shouldDisplay = false;
 
-
-
   Widget quoteTemplate(quote){
     return Card(
-      margin: EdgeInsets.all(16.0),
+      color:   quote.isActive=="true" ? Colors.green : Colors.deepPurple,
+      shadowColor: Colors.orange,
+      margin: EdgeInsets.all(14.0),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        padding: const EdgeInsets.all(6.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             Text(
               quote.text,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.grey[600],
+                fontSize: 22.0,
+                color: Colors.white,
               ),
             ),
             SizedBox(height: 4.0),
@@ -45,7 +46,28 @@ class _QuoteListState extends State<QuoteList> {
                     quotes.remove(quote);
                   });
                 },
-                icon: Icon(Icons.delete)
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red[500],
+                  size: 26.0,
+                ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  if(quote.isActive=="true"){
+                    quote.isActive=quote.isActive="false";
+                  }
+                  else{
+                    quote.isActive=quote.isActive="true";
+                  }
+                });
+              },
+              icon: Icon(
+                Icons.done,
+                color: Colors.white,
+                size: 26.0,
+              ),
             ),
           ],
         ),
@@ -58,15 +80,17 @@ class _QuoteListState extends State<QuoteList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My first app'),
+        title: const Text('To-do List'),
         centerTitle: true,
-        backgroundColor: Colors.red[600],
+        backgroundColor: Colors.deepOrangeAccent,
 
       ),
-      body: Container(
+      body: SingleChildScrollView(
         child: Column(
-            children: quotes.map((quote)=>quoteTemplate(quote)).toList(),
+            children:
+            quotes.map((quote)=>quoteTemplate(quote)).toList(),
           ),
+
       ),
       floatingActionButton: Row(
 
@@ -74,27 +98,28 @@ class _QuoteListState extends State<QuoteList> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-
             onPressed: (){
-
               setState(() {
                 shouldDisplay=!shouldDisplay;
               });
               if(text!=''){
-                setState(() {
-                  quotes.add( Quote(text: "$text"));
-                });
+                if(quotes.length<6) {
+                  setState(() {
+                    quotes.add(Quote(text: "$text", isActive:"false"));
+                  });
+                }
                 msgController.clear();
                 text='';
               }
-
             },
               child: Icon(Icons.add),
           ),
+
           Expanded(
             child:TextField(
+              cursorWidth: 3,
               controller: msgController,
-              maxLength: 10,
+              maxLength: 20,
               onChanged: (value) {
                 setState(() {
                   text = value;
